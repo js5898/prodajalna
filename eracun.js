@@ -196,6 +196,8 @@ var vrniRacune = function(callback) {
 }
 
 // Registracija novega uporabnika
+var success = null;
+
 streznik.post('/prijava', function(zahteva, odgovor) {
   var form = new formidable.IncomingForm();
   
@@ -208,25 +210,52 @@ streznik.post('/prijava', function(zahteva, odgovor) {
     	  Address, City, State, Country, PostalCode, \
     	  Phone, Fax, Email, SupportRepId) \
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
-      //TODO: add fields and finalize
-      //stmt.run("", "", "", "", "", "", "", "", "", "", "", 3); 
-      //stmt.finalize();
+      
+      // Fill polj
+      stmt.run(polja.FirstName, polja.LastName, polja.Company, polja.Address, polja.City, polja.State, polja.Conutry, polja.PostalCode, polja.Phone, polja.Fax, polja.Email, 3); 
+      stmt.finalize();
+      //Check uspesnosti registracije - duplikat napake2 zaradi dosega
+      success = true;
+      //console.log("success = true");
+      //console.log("--> Zgoraj Napaka1: " + napaka1 + " Napaka2: " + napaka2 + " Success: " + success);
     } catch (err) {
       napaka2 = true;
+      success = false;
     }
-  
+    odgovor.redirect('/prijava');
     odgovor.end();
+    
   });
 })
 
 // Prikaz strani za prijavo
 streznik.get('/prijava', function(zahteva, odgovor) {
+  
   vrniStranke(function(napaka1, stranke) {
       vrniRacune(function(napaka2, racuni) {
-        odgovor.render('prijava', {sporocilo: "", seznamStrank: stranke, seznamRacunov: racuni});  
+        //console.log("--> Napaka1: " + napaka1 + " Napaka2: " + napaka2 + " Success: " + success);
+        
+        if(success){
+          console.log("success");
+          var message = "Stranka je bila uspesno registrirana.";
+          odgovor.render('prijava', {sporocilo : message, seznamStrank: stranke, seznamRacunov: racuni});
+          success = null;
+          
+        } else if (!success && (success != null)) {
+          console.log("success=false");
+          var message = "Prišlo je do napake pri registraciji nove stranke. Prosim preverite vnešene podatke in poskusite znova.";
+          odgovor.render('prijava', {sporocilo : message, seznamStrank: stranke, seznamRacunov: racuni});
+          success = null;
+          
+        } else {
+          console.log("else");
+          var message = "";
+          odgovor.render('prijava', {sporocilo: message, seznamStrank: stranke, seznamRacunov: racuni});
+        }
       }) 
     });
 })
+
 
 // Prikaz nakupovalne košarice za stranko
 streznik.post('/stranka', function(zahteva, odgovor) {

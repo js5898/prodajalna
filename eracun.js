@@ -132,23 +132,97 @@ var pesmiIzRacuna = function(racunId, callback) {
     Track.GenreId = Genre.GenreId AND \
     Track.TrackId IN (SELECT InvoiceLine.TrackId FROM InvoiceLine, Invoice \
     WHERE InvoiceLine.InvoiceId = Invoice.InvoiceId AND Invoice.InvoiceId = " + racunId + ")",
+    
     function(napaka, vrstice) {
-      console.log(vrstice);
+      if(!napaka){
+        callback(vrstice);
+      } else {
+        callback(null);
+      }
     })
 }
+
+
+
 
 // Vrni podrobnosti o stranki iz računa
 var strankaIzRacuna = function(racunId, callback) {
     pb.all("SELECT Customer.* FROM Customer, Invoice \
             WHERE Customer.CustomerId = Invoice.CustomerId AND Invoice.InvoiceId = " + racunId,
     function(napaka, vrstice) {
-      console.log(vrstice);
+      if(!napaka){
+        callback(vrstice[0]);
+      } else {
+        callback(null);
+      }
     })
 }
 
+
+
 // Izpis računa v HTML predstavitvi na podlagi podatkov iz baze
 streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
-  odgovor.end();
+  
+  var izpisRacuna = new formidable.IncomingForm();
+  var strankaSave = null;
+  var pesmiSave = null;
+  var flowError = false;
+  
+  // Copy iz Readme.mb formidable
+  izpisRacuna.parse(zahteva, function(err, fields, files) {
+      //res.writeHead(200, {'content-type': 'text/plain'});
+      //res.write('received upload:\n\n');
+      //res.end(util.inspect({fields: fields, files: files}));
+    
+    //console.log("fields.seznamRacunov: " + fields.seznamRacunov);
+    var IDracuna = fields.seznamRacunov;
+    
+    strankaIzRacuna(IDracuna, function(stranka){
+      console.log("test");
+      console.log("fields.imePriimek: " + stranka.FirstName +" "+stranka.LastName );
+      
+      if(stranka){
+         console.log("test2 true");
+         strankaSave = stranka;
+         console.log("strankaSave: "+ strankaSave.FirstName);
+      } else {
+         flowError = true;
+      }
+      
+      if(!flowError){
+        pesmiIzRacuna(IDracuna, function(pesmi){
+          console.log("test2");
+          
+          if(pesmi){
+            console.log("test2 true");
+            pesmiSave = pesmi;
+            
+            for(var i in pesmiSave){
+              pesmiSave[i].stopnja = davcnaStopnja(pesmiSave[i].opisArtikla, pesmiSave[i].zanr);
+            }
+            
+          } else {
+            flowError = true;
+          }
+          
+          if(!flowError){
+              console.log("test3 true");
+              odgovor.setHeader('content-type', 'text/xml');
+              odgovor.render('eslog', {
+              vizualiziraj: true,
+              trenutnaStranka: strankaSave,
+              postavkeRacuna: pesmiSave
+            })
+          }
+          });
+        } 
+        
+        if(flowError) {
+          odgovor.send("Napaka pri izpisu računa iz baze");
+        }
+        
+      })
+  });
 })
 
 // Izpis računa v HTML predstavitvi ali izvorni XML obliki

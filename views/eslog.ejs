@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <% if (vizualiziraj) { %>
 <?xml-stylesheet type="text/xsl" href="../eSLOG/vizualizacija.xslt"?>
 <% } %>
@@ -173,51 +173,27 @@
 			<NazivNaslovPodjetja>
 				<VrstaPartnerja>BY</VrstaPartnerja>
 				<NazivPartnerja>
-					<NazivPartnerja1>Univerza v Ljubljani, </NazivPartnerja1>
-					<NazivPartnerja2>Fakulteta za računalništvo in informatiko</NazivPartnerja2>
-					<NazivPartnerja3>Laboratorij za </NazivPartnerja3>
-					<NazivPartnerja4>podatkovne tehnologije</NazivPartnerja4>
+					<NazivPartnerja1><%= trenutnaStranka.FirstName + " " + trenutnaStranka.LastName + " " %></NazivPartnerja1>
+					<NazivPartnerja2><%= trenutnaStranka.Company %></NazivPartnerja2>
 				</NazivPartnerja>
 				<Ulica>
-					<Ulica1>Večna pot </Ulica1>
-					<Ulica2>113</Ulica2>
-					<Ulica3>nadstropje 2, kabinet R2.49</Ulica3>
+					<Ulica1><%= trenutnaStranka.Address %></Ulica1>
 				</Ulica>
-				<Kraj>Ljubljana</Kraj>
-				<NazivDrzave>Slovenija</NazivDrzave>
-				<PostnaStevilka>1000</PostnaStevilka>
-				<KodaDrzave>SI</KodaDrzave>
+				<Kraj><%= trenutnaStranka.City %></Kraj>
+				<NazivDrzave><%= trenutnaStranka.Country %></NazivDrzave>
+				<PostnaStevilka><%= trenutnaStranka.PostalCode %></PostnaStevilka>
 			</NazivNaslovPodjetja>
-			<FinancniPodatkiPodjetja>
-				<BancniRacun>
-					<StevilkaBancnegaRacuna>SI56020120090111333</StevilkaBancnegaRacuna>
-					<NazivBanke1>Moja banka d.d.</NazivBanke1>
-					<NazivBanke2>Podružnica center</NazivBanke2>
-					<BIC>LJBASI2XXXX</BIC>
-				</BancniRacun>
-			</FinancniPodatkiPodjetja>
-			<ReferencniPodatkiPodjetja>
-				<VrstaPodatkaPodjetja>VA</VrstaPodatkaPodjetja>
-				<PodatekPodjetja>SI67909027</PodatekPodjetja>
-			</ReferencniPodatkiPodjetja>
-			<ReferencniPodatkiPodjetja>
-				<VrstaPodatkaPodjetja>GN</VrstaPodatkaPodjetja>
-				<PodatekPodjetja>1627023</PodatekPodjetja>
-			</ReferencniPodatkiPodjetja>
-			<ReferencniPodatkiPodjetja>
-				<VrstaPodatkaPodjetja>IT</VrstaPodatkaPodjetja>
-				<PodatekPodjetja>444-55</PodatekPodjetja>
-			</ReferencniPodatkiPodjetja>
+			
 			<KontaktiPodjetja>
 				<KontaktnaOseba>
-					<ImeOsebe>Dejan Lavbič</ImeOsebe>
+					<ImeOsebe><%= trenutnaStranka.FirstName + " " + trenutnaStranka.LastName + " (" + trenutnaStranka.Email + ") " %></ImeOsebe>
 				</KontaktnaOseba>
 				<Komunikacije>
-					<StevilkaKomunikacije>38614798000</StevilkaKomunikacije>
+					<StevilkaKomunikacije><%= trenutnaStranka.Phone %></StevilkaKomunikacije>
 					<VrstaKomunikacije>TE</VrstaKomunikacije>
 				</Komunikacije>
 				<Komunikacije>
-					<StevilkaKomunikacije>38612419350</StevilkaKomunikacije>
+					<StevilkaKomunikacije><%= trenutnaStranka.Fax %></StevilkaKomunikacije>
 					<VrstaKomunikacije>FX</VrstaKomunikacije>
 				</Komunikacije>
 			</KontaktiPodjetja>

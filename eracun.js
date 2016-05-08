@@ -146,6 +146,22 @@ var strankaIzRacuna = function(racunId, callback) {
     })
 }
 
+
+
+var strankaIzIDja = function(callback){
+  pb.all("SELECT * FROM Customer \
+          WHERE Customer.CustomerId = " + globalIDstranke,
+  function(napaka, stranka) {
+    //console.log(stranka.FirstName);
+     if(!napaka && stranka != null){
+       callback(napaka, stranka[0]);
+     } else {
+       callback(null);
+     }
+  });
+}
+
+
 // Izpis računa v HTML predstavitvi na podlagi podatkov iz baze
 streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
   odgovor.end();
@@ -153,6 +169,10 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
 
 // Izpis računa v HTML predstavitvi ali izvorni XML obliki
 streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
+  
+  // globalIDstranke
+  console.log("globalIDstranke: " + globalIDstranke);
+  
   pesmiIzKosarice(zahteva, function(pesmi) {
     if (!pesmi) {
       odgovor.sendStatus(500);
@@ -160,14 +180,24 @@ streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
       odgovor.send("<p>V košarici nimate nobene pesmi, \
         zato računa ni mogoče pripraviti!</p>");
     } else {
-      odgovor.setHeader('content-type', 'text/xml');
-      odgovor.render('eslog', {
-        vizualiziraj: zahteva.params.oblika == 'html' ? true : false,
-        postavkeRacuna: pesmi
-      })  
+      strankaIzIDja(function (napaka, stranka){
+          
+         if(stranka != null){ 
+            console.log("stranka.FNLN: " + stranka.FirstName +" "+stranka.LastName);
+            // Koda od prej
+            odgovor.setHeader('content-type', 'text/xml');
+            odgovor.render('eslog', {
+            vizualiziraj: zahteva.params.oblika == 'html' ? true : false,
+            trenutnaStranka: stranka,
+            postavkeRacuna: pesmi
+            });
+         } else {
+           odgovor.send("Uporabnika v bazi ni bilo mogoče najti.");
+         }
+      });
     }
-  })
-})
+  });
+});
 
 // Privzeto izpiši račun v HTML obliki
 streznik.get('/izpisiRacun', function(zahteva, odgovor) {
@@ -228,11 +258,16 @@ streznik.get('/prijava', function(zahteva, odgovor) {
     });
 })
 
+
+var globalIDstranke = null;
 // Prikaz nakupovalne košarice za stranko
 streznik.post('/stranka', function(zahteva, odgovor) {
   var form = new formidable.IncomingForm();
   
   form.parse(zahteva, function (napaka1, polja, datoteke) {
+    //console.log("Parse stranke: " + polja.seznamStrank);
+    globalIDstranke = polja.seznamStrank;
+    console.log("ID: "+ globalIDstranke);
     odgovor.redirect('/')
   });
 })

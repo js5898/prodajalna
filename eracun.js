@@ -200,23 +200,23 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
     var IDracuna = fields.seznamRacunov;
     
     strankaIzRacuna(IDracuna, function(stranka){
-      console.log("test");
-      console.log("fields.imePriimek: " + stranka.FirstName +" "+stranka.LastName );
+      //console.log("test");
+      //console.log("fields.imePriimek: " + stranka.FirstName +" "+stranka.LastName );
       
       if(stranka){
-         console.log("test2 true");
+        // console.log("test2 true");
          strankaSave = stranka;
-         console.log("strankaSave: "+ strankaSave.FirstName);
+         //console.log("strankaSave: "+ strankaSave.FirstName);
       } else {
          flowError = true;
       }
       
       if(!flowError){
         pesmiIzRacuna(IDracuna, function(pesmi){
-          console.log("test2");
+          //console.log("test2");
           
           if(pesmi){
-            console.log("test2 true");
+            //console.log("test2 true");
             pesmiSave = pesmi;
             
             for(var i in pesmiSave){
@@ -228,7 +228,7 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
           }
           
           if(!flowError){
-              console.log("test3 true");
+              //console.log("test3 true");
               odgovor.setHeader('content-type', 'text/xml');
               odgovor.render('eslog', {
               vizualiziraj: true,
@@ -251,7 +251,7 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
 streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
   
   // globalIDstranke
-  console.log("globalIDstranke: " + globalIDstranke);
+  //console.log("globalIDstranke: " + globalIDstranke);
   
   pesmiIzKosarice(zahteva, function(pesmi) {
     if (!pesmi) {
@@ -263,7 +263,7 @@ streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
       strankaIzIDja(function (napaka, stranka){
           
          if(stranka != null){ 
-            console.log("stranka.FNLN: " + stranka.FirstName +" "+stranka.LastName);
+            //console.log("stranka.FNLN: " + stranka.FirstName +" "+stranka.LastName);
             // Koda od prej
             odgovor.setHeader('content-type', 'text/xml');
             odgovor.render('eslog', {
@@ -346,29 +346,25 @@ streznik.get('/prijava', function(zahteva, odgovor) {
         //console.log("--> Napaka1: " + napaka1 + " Napaka2: " + napaka2 + " Success: " + success);
         
         if(success){
-          console.log("success");
+          //console.log("success");
           var message = "Stranka je bila uspesno registrirana.";
           odgovor.render('prijava', {sporocilo : message, seznamStrank: stranke, seznamRacunov: racuni});
           success = null;
           
         } else if (!success && (success != null)) {
-          console.log("success=false");
+          //console.log("success=false");
           var message = "Prišlo je do napake pri registraciji nove stranke. Prosim preverite vnešene podatke in poskusite znova.";
           odgovor.render('prijava', {sporocilo : message, seznamStrank: stranke, seznamRacunov: racuni});
           success = null;
           
         } else {
-          console.log("else");
+          //console.log("else");
           var message = "";
           odgovor.render('prijava', {sporocilo: message, seznamStrank: stranke, seznamRacunov: racuni});
         }
       }) 
     });
 })
-
-
-
-
 
 var userSelected = null;
 var globalIDstranke = null;
@@ -383,7 +379,7 @@ streznik.post('/stranka', function(zahteva, odgovor) {
 
     
     globalIDstranke = polja.seznamStrank;
-    console.log("ID: "+ globalIDstranke);
+    //console.log("ID: "+ globalIDstranke);
     odgovor.redirect('/');
   });
 })
